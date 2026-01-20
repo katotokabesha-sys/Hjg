@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="futuristic" data-mode="desktop">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LB-K SMART 2026 | Boutique Intelligente Kolwezi</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/config/pwa-manifest.json">
+    <meta name="theme-color" content="#0a0a1f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="LB-K SMART">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/themes.css">
+    
+    <!-- Service Worker -->
+    <script>
+        if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/config/service-worker.js')
+                .then(() => console.log('Service Worker enregistré'))
+                .catch(err => console.log('Erreur SW:', err));
+        }
+    </script>
+</head>
+<body>
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="desktop">
+            <i class="fas fa-desktop"></i> Bureau
+        </button>
+        <button class="mode-btn" data-mode="mobile">
+            <i class="fas fa-mobile-alt"></i> Mobile
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="logo-container">
+            <div class="logo-hologram">
+                <div class="hologram-effect"></div>
+                <span class="logo-text">LB-K SMART 2026</span>
+            </div>
+            <div class="dual-shop">
+                <span class="shop-betty">Betty Kabey Smart</span>
+                <span class="shop-laurent">Laurent Kabesha Smart</span>
+            </div>
+        </div>
+        
+        <!-- Menu Hamburger -->
+        <button class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Barre Publicitaire -->
+    <div class="advertising-bar">
+        <div class="ad-controls">
+            <button class="ad-control"><i class="fas fa-play"></i></button>
+            <button class="ad-control"><i class="fas fa-pause"></i></button>
+            <button class="ad-control"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ad-carousel" id="adCarousel">
+            <!-- Ads dynamiques -->
+        </div>
+    </div>
+
+    <!-- Bureau Racine Intelligent -->
+    <main class="smart-desktop">
+        <!-- Section Catalogue (Commande) -->
+        <section class="catalog-section" id="catalogSection">
+            <div class="section-header">
+                <h2><i class="fas fa-box"></i> Catalogue (15-21 jours)</h2>
+                <span class="badge yellow">Commande</span>
+            </div>
+            <div class="products-grid catalog-grid" id="catalogGrid">
+                <!-- Produits sur commande -->
+            </div>
+        </section>
+
+        <!-- Séparateur Redimensionnable -->
+        <div class="resizable-divider" id="resizableDivider">
+            <div class="divider-handle">
+                <i class="fas fa-grip-lines-vertical"></i>
+            </div>
+        </div>
+
+        <!-- Section Stock (Immédiat) -->
+        <section class="stock-section" id="stockSection">
+            <div class="section-header">
+                <h2><i class="fas fa-store"></i> Stock Immédiat</h2>
+                <span class="badge green">Disponible</span>
+            </div>
+            <div class="products-grid stock-grid" id="stockGrid">
+                <!-- Produits en stock -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Boutons Flottants -->
+    <div class="floating-buttons">
+        <button class="floating-btn whatsapp-btn" data-action="whatsapp">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="floating-btn ai-btn" data-action="ai">
+            <i class="fas fa-robot"></i>
+        </button>
+        <button class="floating-btn cart-btn" data-action="cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+        </button>
+        <button class="floating-btn admin-btn" data-action="admin">
+            <i class="fas fa-cog"></i>
+        </button>
+        <button class="floating-btn mode-btn" data-action="mode">
+            <i class="fas fa-exchange-alt"></i>
+        </button>
+    </div>
+
+    <!-- Panneau IA -->
+    <div class="ai-panel" id="aiPanel">
+        <div class="ai-header">
+            <h3><i class="fas fa-robot"></i> Assistant Shopping IA</h3>
+            <button class="close-ai"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ai-conversation" id="aiConversation">
+            <!-- Conversation IA -->
+        </div>
+        <div class="ai-input">
+            <input type="text" placeholder="Demandez-moi conseil...">
+            <button><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Panneau Admin -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h3><i class="fas fa-cogs"></i> Panel Administration</h3>
+            <input type="password" class="admin-password" placeholder="Code admin">
+        </div>
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="products">📦 Produits</button>
+            <button class="tab-btn" data-tab="ads">📢 Publicité</button>
+            <button class="tab-btn" data-tab="whatsapp">💬 WhatsApp</button>
+            <button class="tab-btn" data-tab="analytics">📊 Stats</button>
+            <button class="tab-btn" data-tab="terminal">💻 Terminal</button>
+        </div>
+        <div class="admin-content">
+            <!-- Contenu Admin -->
+        </div>
+    </div>
+
+    <!-- Terminal Code -->
+    <div class="code-terminal" id="codeTerminal">
+        <div class="terminal-header">
+            <h4><i class="fas fa-code"></i> Terminal Super-Admin</h4>
+            <div class="terminal-controls">
+                <button class="term-btn"><i class="fas fa-play"></i></button>
+                <button class="term-btn"><i class="fas fa-save"></i></button>
+                <button class="term-btn"><i class="fas fa-history"></i></button>
+            </div>
+        </div>
+        <textarea class="code-editor" id="codeEditor"></textarea>
+        <div class="terminal-output" id="terminalOutput"></div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="newsletter-bar">
+        <p>📧 Inscrivez-vous pour recevoir nos offres exclusives</p>
+        <div class="newsletter-form">
+            <input type="email" placeholder="Votre email">
+            <button>S'inscrire</button>
+        </div>
+        <div class="subscriber-count">
+            <i class="fas fa-users"></i>
+            <span id="subscriberCount">0</span> abonnés
+        </div>
+    </div>
+
+    <!-- Visiteurs Temps Réel -->
+    <div class="visitor-counter">
+        <i class="fas fa-eye"></i>
+        <span id="visitorCount">0</span> en ligne
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/products-engine.js"></script>
+    <script src="js/cart-engine.js"></script>
+    <script src="js/whatsapp-engine.js"></script>
+    <script src="js/admin-panel.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/logistics-calculator.js"></script>
+    <script src="js/visitor-tracker.js"></script>
+    <script src="js/newsletter-manager.js"></script>
+    <script src="js/ad-manager.js"></script>
+    <script src="js/dual-mode-switcher.js"></script>
+    
+    <script>
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            LBK.init();
+        });
+    </script>
+</body>
+</html>
