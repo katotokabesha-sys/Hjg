@@ -1,0 +1,214 @@
+// script.js - Fonctionnalités principales
+
+// 1. NAVIGATION HAMBURGER
+const menuToggle = document.getElementById('menuToggle');
+const navDrawer = document.getElementById('navDrawer');
+const closeMenu = document.getElementById('closeMenu');
+
+menuToggle.addEventListener('click', () => {
+    navDrawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+});
+
+closeMenu.addEventListener('click', () => {
+    navDrawer.classList.remove('open');
+    document.body.style.overflow = 'auto';
+});
+
+// 2. CARROUSEL AUTOMATIQUE
+let currentSlide = 1;
+const totalSlides = 3;
+
+function nextSlide() {
+    currentSlide = currentSlide === totalSlides ? 1 : currentSlide + 1;
+    updateCarousel();
+}
+
+function prevSlide() {
+    currentSlide = currentSlide === 1 ? totalSlides : currentSlide - 1;
+    updateCarousel();
+}
+
+function updateCarousel() {
+    document.querySelectorAll('.carousel-slide').forEach(slide => {
+        slide.classList.remove('active');
+        if(parseInt(slide.dataset.slide) === currentSlide) {
+            slide.classList.add('active');
+        }
+    });
+    
+    document.querySelectorAll('.indicator').forEach(ind => {
+        ind.classList.remove('active');
+        if(parseInt(ind.dataset.slide) === currentSlide) {
+            ind.classList.add('active');
+        }
+    });
+}
+
+// Auto-rotation
+setInterval(nextSlide, 5000);
+
+// 3. INTÉGRATION WHATSAPP
+function openWhatsApp(type) {
+    const phoneNumbers = {
+        'general': '+243822937321',
+        'betty': '+243971455335',
+        'laurent': '+243822937321',
+        'direct': '+243822937321'
+    };
+    
+    const defaultMessage = encodeURIComponent(
+        "Bonjour LB-K SMART! Je suis intéressé(e) par vos produits. Pouvez-vous m'aider?"
+    );
+    
+    window.open(`https://wa.me/${phoneNumbers[type]}?text=${defaultMessage}`, '_blank');
+}
+
+// 4. PANEL ADMIN
+let adminPassword = 'admin123';
+let isAdminLogged = false;
+
+function openAdminPanel() {
+    document.getElementById('adminPanel').style.display = 'block';
+}
+
+function verifyAdmin() {
+    const inputPass = document.getElementById('adminPassword').value;
+    if(inputPass === adminPassword) {
+        isAdminLogged = true;
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        loadProductsForAdmin();
+    } else {
+        alert('Mot de passe incorrect!');
+    }
+}
+
+function changePassword() {
+    const newPass = document.getElementById('newPassword').value;
+    if(newPass.length >= 4) {
+        adminPassword = newPass;
+        document.getElementById('currentPass').textContent = newPass;
+        alert('Mot de passe mis à jour!');
+    }
+}
+
+// 5. CHATBOT IA
+function openAIChat() {
+    document.getElementById('aiChatbot').style.display = 'block';
+}
+
+function handleChatInput(e) {
+    if(e.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById('userMessage');
+    const message = input.value.trim();
+    
+    if(message) {
+        addMessage(message, 'user');
+        input.value = '';
+        
+        // Simuler réponse IA
+        setTimeout(() => {
+            generateAIResponse(message);
+        }, 1000);
+    }
+}
+
+function generateAIResponse(userMessage) {
+    const responses = {
+        'prix': "Nos prix varient selon les produits. Pour les vêtements: 15-50$, Électronique: 20-200$. Voulez-vous un produit spécifique?",
+        'livraison': "Livraison à Kolwezi: 2-3 jours, RDC: 5-10 jours. International: 15-90 jours selon transport.",
+        'commande': "Pour commander: 1) Choisissez produit 2) Contactez-nous sur WhatsApp 3) Payez via Mobile Money 4) Recevez livraison!",
+        'default': "Je comprends que vous demandez: " + userMessage + ". Pour une réponse précise, contactez directement notre équipe sur WhatsApp."
+    };
+    
+    let response = responses.default;
+    
+    if(userMessage.toLowerCase().includes('prix')) response = responses.prix;
+    if(userMessage.toLowerCase().includes('livraison')) response = responses.livraison;
+    if(userMessage.toLowerCase().includes('commande')) response = responses.commande;
+    
+    addMessage(response, 'bot');
+}
+
+// 6. MODE DUAL (Jour/Nuit)
+const modeSwitch = document.querySelector('.dual-mode-switch');
+modeSwitch.addEventListener('click', (e) => {
+    if(e.target.classList.contains('mode-indicator')) {
+        const mode = e.target.dataset.mode;
+        document.documentElement.setAttribute('data-theme', mode);
+        
+        document.querySelectorAll('.mode-indicator').forEach(ind => {
+            ind.classList.remove('active');
+        });
+        e.target.classList.add('active');
+    }
+});
+
+// 7. BASE DE DONNÉES PRODUITS (Local Storage)
+const productsDatabase = {
+    betty: [
+        { id: 1, name: "Robe soirée élégante", price: 45, category: "fashion-women", image: "robe.jpg" },
+        { id: 2, name: "Jeans slim homme", price: 30, category: "fashion-men", image: "jeans.jpg" },
+        { id: 3, name: "Parfum femme floral", price: 25, category: "cosmetics", image: "parfum.jpg" }
+    ],
+    laurent: [
+        { id: 101, name: "Power Bank 20000mAh", price: 35, category: "electronics", image: "powerbank.jpg" },
+        { id: 102, name: "Panneau solaire 100W", price: 150, category: "electrical", image: "solaire.jpg" },
+        { id: 103, name: "Kit premiers soins", price: 20, category: "pharmaceuticals", image: "pharma.jpg" }
+    ]
+};
+
+function loadProducts() {
+    // Charger produits dans le DOM
+    // Implémentation détaillée dans products-database.js
+}
+
+// 8. SERVICE WORKER POUR PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker enregistré:', registration);
+            })
+            .catch(error => {
+                console.log('ServiceWorker échec:', error);
+            });
+    });
+}
+
+// 9. MODE HORS LIGNE
+function checkOnlineStatus() {
+    if (!navigator.onLine) {
+        document.body.classList.add('offline');
+        showOfflineMessage();
+    }
+    
+    window.addEventListener('online', () => {
+        document.body.classList.remove('offline');
+        hideOfflineMessage();
+    });
+    
+    window.addEventListener('offline', () => {
+        document.body.classList.add('offline');
+        showOfflineMessage();
+    });
+}
+
+// 10. RECHERCHE PRODUITS
+document.getElementById('globalSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    filterProducts(searchTerm);
+});
+
+function filterProducts(term) {
+    // Filtre les produits en temps réel
+    // Implémentation dans products-database.js
+}
+
+console.log("✅ LB-K SMART Platform 2026 - UI Futuriste initialisée");
