@@ -1,0 +1,85 @@
+{
+  "app": {
+    "name": "LB-K SMART 2026",
+    "version": "2026.1.0",
+    "mode": "desktop",
+    "theme": "futuristic",
+    "language": "fr"
+  },
+  
+  "whatsapp": {
+    "laurent_phone": "+243822937321",
+    "betty_phone": "+243971455335",
+    "auto_routing": true,
+    "order_template": "🛒 *COMMANDE LB-K SMART*\nClient: {{client_name}}\n...",
+    "inquiry_template": "🔍 *DEMANDE D'INFORMATION*\n..."
+  },
+  
+  "shipping": {
+    "air_express_base": 25000,
+    "air_normal_base": 18000,
+    "air_per_kg": 30,
+    "boat_per_cbm": 500,
+    "phone_rate": 30,
+    "laptop_rate": 50,
+    "battery_rule": "force_boat"
+  },
+  
+  "display": {
+    "catalog_ratio": 30,
+    "stock_ratio": 70,
+    "show_badges": true,
+    "show_prices": true,
+    "show_stock_count": true,
+    "animation_speed": "normal"
+  },
+  
+  "ads": {
+    "enabled": true,
+    "rotation_speed": 30,
+    "show_controls": true,
+    "priority_products": ["new", "promo", "stock"],
+    "max_ads": 10
+  },
+  
+  "ai": {
+    "enabled": true,
+    "language": "fr",
+    "suggestions": true,
+    "recommendations": true,
+    "max_history": 50
+  },
+  
+  "admin": {
+    "password": "LBK2026!",
+    "auto_backup": true,
+    "backup_interval": 24,
+    "max_backups": 30,
+    "allow_terminal": true,
+    "allow_deploy": true
+  },
+  
+  "analytics": {
+    "enabled": true,
+    "track_visitors": true,
+    "track_products": true,
+    "track_cart": true,
+    "track_orders": true,
+    "privacy_mode": "anonymous"
+  },
+  
+  "pwa": {
+    "installable": true,
+    "offline_mode": true,
+    "cache_strategy": "stale-while-revalidate",
+    "update_check": 24
+  },
+  
+  "security": {
+    "https_required": true,
+    "input_validation": true,
+    "xss_protection": true,
+    "max_file_size": 5242880,
+    "allowed_extensions": ["jpg", "jpeg", "png", "webp"]
+  }
+}
