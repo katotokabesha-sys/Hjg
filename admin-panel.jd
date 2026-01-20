@@ -1,0 +1,331 @@
+class AdminPanel {
+    constructor(app) {
+        this.app = app;
+        this.password = "LBK2026!";
+        this.isAuthenticated = false;
+        
+        this.tabs = {
+            products: new ProductsManager(this.app),
+            ads: new AdsManager(this.app),
+            whatsapp: new WhatsAppManager(this.app),
+            analytics: new AnalyticsManager(this.app),
+            terminal: new TerminalManager(this.app)
+        };
+    }
+
+    show() {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = 'block';
+        
+        // Vérifier si déjà authentifié
+        if (!this.isAuthenticated) {
+            this.showLogin();
+        } else {
+            this.showDashboard();
+        }
+    }
+
+    showLogin() {
+        document.querySelector('.admin-content').innerHTML = `
+            <div class="admin-login">
+                <h4><i class="fas fa-lock"></i> Connexion Admin</h4>
+                <input type="password" id="adminPassword" placeholder="Code d'accès">
+                <button onclick="LBK.modules.admin.login()">Se connecter</button>
+                <p class="hint">Code par défaut: LBK2026!</p>
+            </div>
+        `;
+    }
+
+    login() {
+        const input = document.getElementById('adminPassword');
+        if (input.value === this.password) {
+            this.isAuthenticated = true;
+            localStorage.setItem('lbk_admin_auth', 'true');
+            this.showDashboard();
+            this.app.trackEvent('admin_login_success');
+        } else {
+            alert('Code incorrect!');
+            this.app.trackEvent('admin_login_failed');
+        }
+    }
+
+    showDashboard() {
+        document.querySelector('.admin-content').innerHTML = `
+            <div class="admin-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-box"></i>
+                        <h3>${this.app.state.products.length}</h3>
+                        <p>Produits total</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-store"></i>
+                        <h3>${this.app.state.stockProducts.length}</h3>
+                        <p>En stock</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>${this.app.state.cart.length}</h3>
+                        <p>Panier actif</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-eye"></i>
+                        <h3>${this.app.state.visitors.length}</h3>
+                        <p>Visiteurs</p>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button onclick="LBK.modules.admin.tabs.products.show()">
+                        <i class="fas fa-plus"></i> Ajouter produit
+                    </button>
+                    <button onclick="LBK.modules.admin.tabs.ads.show()">
+                        <i class="fas fa-ad"></i> Gérer pub
+                    </button>
+                    <button onclick="LBK.modules.admin.tabs.whatsapp.show()">
+                        <i class="fab fa-whatsapp"></i> Config WhatsApp
+                    </button>
+                    <button onclick="LBK.modules.admin.tabs.analytics.show()">
+                        <i class="fas fa-chart-bar"></i> Voir stats
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    addProduct() {
+        // Interface d'ajout de produit
+        const html = `
+            <div class="add-product-form">
+                <h4><i class="fas fa-plus-circle"></i> Ajouter un produit</h4>
+                
+                <div class="form-group">
+                    <label>Boutique</label>
+                    <select id="productBoutique">
+                        <option value="betty">Betty Kabey Smart</option>
+                        <option value="laurent">Laurent Kabesha Smart</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <select id="productCategory">
+                        <option value="electronics">Électronique</option>
+                        <option value="clothing">Vêtements</option>
+                        <option value="pharmacy">Pharmacie</option>
+                        <option value="cosmetics">Cosmétiques</option>
+                        <option value="appliances">Électroménager</option>
+                        <option value="auto">Pièces auto</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nom du produit</label>
+                    <input type="text" id="productName" placeholder="iPhone 15 Pro Max">
+                </div>
+                
+                <div class="form-group">
+                    <label>Prix ($)</label>
+                    <input type="number" id="productPrice" placeholder="1200">
+                </div>
+                
+                <div class="form-group">
+                    <label>Disponibilité</label>
+                    <select id="productAvailability">
+                        <option value="stock">En stock (livraison immédiate)</option>
+                        <option value="order">Sur commande (15-21 jours)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="file" id="productImage" accept="image/*" capture="environment">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                
+                <div class="category-fields" id="categoryFields">
+                    <!-- Champs spécifiques selon catégorie -->
+                </div>
+                
+                <button onclick="LBK.modules.admin.saveProduct()" class="btn-save">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </div>
+        `;
+        
+        document.querySelector('.admin-content').innerHTML = html;
+        this.setupCategoryFields();
+    }
+
+    setupCategoryFields() {
+        const categorySelect = document.getElementById('productCategory');
+        const fieldsContainer = document.getElementById('categoryFields');
+        
+        categorySelect.addEventListener('change', () => {
+            const category = categorySelect.value;
+            let fields = '';
+            
+            switch(category) {
+                case 'pharmacy':
+                    fields = `
+                        <div class="form-group">
+                            <label>DCI</label>
+                            <input type="text" id="productDCI">
+                        </div>
+                        <div class="form-group">
+                            <label>Dosage</label>
+                            <input type="text" id="productDosage" placeholder="500mg">
+                        </div>
+                        <div class="form-group">
+                            <label>Date péremption</label>
+                            <input type="date" id="productExpiry">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'clothing':
+                    fields = `
+                        <div class="form-group">
+                            <label>Taille</label>
+                            <select id="productSize">
+                                <option>XS</option><option>S</option><option>M</option>
+                                <option>L</option><option>XL</option><option>XXL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Couleur</label>
+                            <input type="color" id="productColor" value="#000000">
+                        </div>
+                        <div class="form-group">
+                            <label>Matière</label>
+                            <input type="text" id="productMaterial" placeholder="Coton, Soie...">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'electronics':
+                    fields = `
+                        <div class="form-group">
+                            <label>Modèle</label>
+                            <input type="text" id="productModel">
+                        </div>
+                        <div class="form-group">
+                            <label>Spécifications</label>
+                            <textarea id="productSpecs" placeholder="RAM, Stockage, OS..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Garantie</label>
+                            <input type="text" id="productWarranty" placeholder="1 an">
+                        </div>
+                    `;
+                    break;
+            }
+            
+            fieldsContainer.innerHTML = fields;
+        });
+        
+        // Trigger initial
+        categorySelect.dispatchEvent(new Event('change'));
+    }
+
+    async saveProduct() {
+        const product = {
+            id: Date.now(),
+            name: document.getElementById('productName').value,
+            category: document.getElementById('productCategory').value,
+            boutique: document.getElementById('productBoutique').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            availability: document.getElementById('productAvailability').value,
+            image: await this.processImage(),
+            createdAt: new Date().toISOString()
+        };
+        
+        // Ajouter les champs spécifiques
+        const category = product.category;
+        switch(category) {
+            case 'pharmacy':
+                product.dci = document.getElementById('productDCI').value;
+                product.dosage = document.getElementById('productDosage').value;
+                product.expiry = document.getElementById('productExpiry').value;
+                break;
+            case 'clothing':
+                product.size = document.getElementById('productSize').value;
+                product.color = document.getElementById('productColor').value;
+                product.material = document.getElementById('productMaterial').value;
+                break;
+            case 'electronics':
+                product.model = document.getElementById('productModel').value;
+                product.specs = document.getElementById('productSpecs').value;
+                product.warranty = document.getElementById('productWarranty').value;
+                break;
+        }
+        
+        // Ajouter au tableau
+        this.app.state.products.push(product);
+        
+        // Mettre à jour l'affichage
+        this.app.separateProducts();
+        this.app.renderProducts();
+        
+        // Sauvegarder
+        localStorage.setItem('lbk_products', JSON.stringify(this.app.state.products));
+        
+        alert('✅ Produit ajouté avec succès!');
+        this.showDashboard();
+        
+        this.app.trackEvent('product_added', {
+            category: product.category,
+            boutique: product.boutique,
+            price: product.price
+        });
+    }
+
+    async processImage() {
+        const fileInput = document.getElementById('productImage');
+        if (!fileInput.files[0]) {
+            return '/assets/images/products/default.jpg';
+        }
+        
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Compresser l'image
+                this.compressImage(e.target.result, (compressed) => {
+                    resolve(compressed);
+                });
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+    }
+
+    compressImage(dataUrl, callback) {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Réduire la taille
+            const maxWidth = 800;
+            const maxHeight = 800;
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height && width > maxWidth) {
+                height *= maxWidth / width;
+                width = maxWidth;
+            } else if (height > maxHeight) {
+                width *= maxHeight / height;
+                height = maxHeight;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convertir en WebP
+            const compressed = canvas.toDataURL('image/webp', 0.85);
+            callback(compressed);
+        };
+        img.src = dataUrl;
+    }
+}
